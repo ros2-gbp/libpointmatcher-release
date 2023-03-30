@@ -15,7 +15,6 @@ namespace python
 				.def_static("availableParameters", &RandomSamplingDataPointsFilter::availableParameters)
 
 				.def_readonly("prob", &RandomSamplingDataPointsFilter::prob)
-				.def_readonly("seed", &RandomSamplingDataPointsFilter::seed)
 
 				.def(py::init<const Parameters&>(), py::arg("params") = Parameters(), "Constructor, uses parameter interface")
 
