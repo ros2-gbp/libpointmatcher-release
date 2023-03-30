@@ -151,8 +151,6 @@ void SamplingSurfaceNormalDataPointsFilter<T>::inPlaceFilter(
 		cloud.features.col(i) = cloud.features.col(k);
 		if (cloud.descriptors.rows() != 0)
 			cloud.descriptors.col(i) = cloud.descriptors.col(k);
-		if (cloud.times.rows() != 0)
-			cloud.times.col(i) = cloud.times.col(k);
 		if(keepNormals)
 			buildData.normals->col(i) = buildData.normals->col(k);
 		if(keepDensities)
@@ -162,7 +160,9 @@ void SamplingSurfaceNormalDataPointsFilter<T>::inPlaceFilter(
 		if(keepEigenVectors)
 			buildData.eigenVectors->col(i) = buildData.eigenVectors->col(k);
 	}
-	cloud.conservativeResize(ptsOut);
+	cloud.features.conservativeResize(Eigen::NoChange, ptsOut);
+	cloud.descriptors.conservativeResize(Eigen::NoChange, ptsOut);
+
 	// warning if some points were dropped
 	if(buildData.unfitPointsCount != 0)
 		LOG_INFO_STREAM("  SamplingSurfaceNormalDataPointsFilter - Could not compute normal for " << buildData.unfitPointsCount << " pts.");

@@ -32,7 +32,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-#include "PointMatcherPrivate.h"
 
 #include "Histogram.h"
 
@@ -69,13 +68,13 @@ namespace PointMatcherSupport
 		
 		if (!filePrefix.empty())
 		{
-			LOG_INFO_STREAM("writing to " << (filePrefix + name + "Stats.csv"));
+			std::cerr << "writing to " << (filePrefix + name + "Stats.csv") << std::endl;
 			std::ofstream ofs_stats((filePrefix + name + "Stats.csv").c_str());
 			dumpStatsHeader(ofs_stats);
 			ofs_stats << endl;
 			dumpStats(ofs_stats);
 
-			LOG_INFO_STREAM("writing to " << (filePrefix + name + ".csv"));
+			std::cerr << "writing to " << (filePrefix + name + ".csv") << std::endl;
 			std::ofstream ofs((filePrefix + name + ".csv").c_str());
 			for (size_t i = 0; i < this->size(); ++i)
 				ofs << ((*this)[i]) << "\n";
