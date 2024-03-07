@@ -78,7 +78,7 @@ tracks:
     release_tag: master
     ros_distro: humble
     vcs_type: git
-    vcs_uri: https://github.com/ethz-asl/libpointmatcher.git
+    vcs_uri: https://github.com/norlab-ulaval/libpointmatcher.git
     version: :{auto}
   iron:
     actions:
@@ -105,7 +105,7 @@ tracks:
     release_tag: master
     ros_distro: iron
     vcs_type: git
-    vcs_uri: https://github.com/ethz-asl/libpointmatcher.git
+    vcs_uri: https://github.com/norlab-ulaval/libpointmatcher.git
     version: :{auto}
   melodic:
     actions:
@@ -159,7 +159,7 @@ tracks:
     release_tag: master
     ros_distro: noetic
     vcs_type: git
-    vcs_uri: https://github.com/ethz-asl/libpointmatcher.git
+    vcs_uri: https://github.com/norlab-ulaval/libpointmatcher.git
     version: :{auto}
   rolling:
     actions:
@@ -186,5 +186,5 @@ tracks:
     release_tag: master
     ros_distro: rolling
     vcs_type: git
-    vcs_uri: https://github.com/ethz-asl/libpointmatcher.git
+    vcs_uri: https://github.com/norlab-ulaval/libpointmatcher.git
     version: :{auto}
