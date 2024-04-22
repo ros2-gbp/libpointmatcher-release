@@ -1,3 +1,26 @@
+## libpointmatcher (jazzy) - 1.4.2-1
+
+The packages in the `libpointmatcher` repository were released into the `jazzy` distro by running `/usr/local/google/home/marcogg/migration/bin/bloom-release libpointmatcher --rosdistro jazzy` on `Mon, 22 Apr 2024 10:28:05 -0000`
+
+The `libpointmatcher` package was released.
+
+Version of package(s) in repository `libpointmatcher`:
+
+- upstream repository: https://github.com/norlab-ulaval/libpointmatcher.git
+- release repository: https://github.com/ros2-gbp/libpointmatcher-release.git
+- rosdistro version: `null`
+- old version: `null`
+- new version: `1.4.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## libpointmatcher (rolling) - 1.4.1-1
 
 The packages in the `libpointmatcher` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --track rolling --rosdistro rolling libpointmatcher` on `Fri, 22 Mar 2024 11:56:16 -0000`
