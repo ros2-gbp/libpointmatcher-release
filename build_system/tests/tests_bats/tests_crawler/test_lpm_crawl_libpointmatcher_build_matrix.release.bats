@@ -24,6 +24,7 @@ if [[ -d ${BATS_HELPER_PATH} ]]; then
   load "${BATS_HELPER_PATH}/bats-assert/load"
   load "${BATS_HELPER_PATH}/bats-file/load"
   load "${SRC_CODE_PATH}/${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions"
+  load "${SRC_CODE_PATH}/build_system/tests/tests_bats/bats_helper_functions"
   #load "${BATS_HELPER_PATH}/bats-detik/load" # << Kubernetes support
 else
   echo -e "\n[\033[1;31mERROR\033[0m] $0 path to bats-core helper library unreachable at \"${BATS_HELPER_PATH}\"!" 1>&2
@@ -34,8 +35,11 @@ fi
 
 # ====Setup========================================================================================
 
-TESTED_FILE="nbs_install_python_dev_tools.bash"
-TESTED_FILE_PATH="./src/utility_scripts"
+TESTED_FILE="lpm_crawl_libpointmatcher_build_matrix.release.bash"
+TESTED_FILE_PATH="./build_system/"
+COMPOSE_FILE="docker-compose.libpointmatcher.yaml"
+DOTENV_BUILD_MATRIX="${SRC_CODE_PATH}"/build_system/.env.build_matrix.libpointmatcher.release
+DOTENV_BUILD_MATRIX_NAME=$( basename "${DOTENV_BUILD_MATRIX}" )
 
 # executed once before starting the first test (valide for all test in that file)
 setup_file() {
@@ -64,19 +68,34 @@ teardown() {
 
 # ====Test casses==================================================================================
 
-@test "Executing $TESTED_FILE from bad cwd › expect fail" {
-  cd "${BATS_DOCKER_WORKDIR}/src/"
-  # Note:
-  #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
-  #    run bash -c "echo 'Y' | source ./function_library/$TESTED_FILE"
-  #  - Alt: Use the 'yes [n]' command which optionaly send n time
-  run bash -c "yes 1 | bash ./utility_scripts/$TESTED_FILE"
-  assert_failure 1
-  assert_output --regexp  .*"\[".*"ERROR".*"\]".*"'nbs_install_python_dev_tools.bash' script must be executed from the"
+@test "${TESTED_FILE} › docker image › execute ok › expect pass" {
+#  skip "tmp mute" # ToDo: on task end >> delete this line ←
+
+  run bash "${TESTED_FILE}" "${DOTENV_BUILD_MATRIX}" --fail-fast -- build
+#  OPTIONS=( "${DOTENV_BUILD_MATRIX}" "--ubuntu-version-build-matrix-override jammy" "--fail-fast" "--" "config --quiet" )
+#  run bash "${TESTED_FILE}" "${OPTIONS[@]}"
+
+  assert_success
+  assert_output --regexp .*"Starting".*"${TESTED_FILE}".*"\[NBS\]".*"Build images specified in".*"'${COMPOSE_FILE}'".*"following".*"${DOTENV_BUILD_MATRIX_NAME}"
+  assert_output --regexp .*"\[NBS done\]".*"FINAL › Build matrix completed with command".*"\$".*"docker compose -f ${COMPOSE_FILE}"
+#  build --dry-run
+  assert_output --regexp "Status of tag crawled:".*"Pass".*"› latest".*"Completed".*"${TESTED_FILE}".*
 }
 
-@test "executing $TESTED_FILE from ok cwd › expect pass" {
-  cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
-  run bash -c "bash ./$TESTED_FILE"
-  assert_success
+# ....Test --help flag related logic...............................................................
+
+@test "${TESTED_FILE} › --help as first argument › execute ok › expect pass" {
+#  skip "tmp dev" # ToDo: on task end >> delete this line ←
+  run bash "${TESTED_FILE}" --help
+  test_generic_help_flag_logic
 }
+
+@test "${TESTED_FILE} › second arg: --help › execute ok › expect pass" {
+#  skip "tmp dev" # ToDo: on task end >> delete this line ←
+
+  run bash "${TESTED_FILE}" --fail-fast --help
+  test_generic_help_flag_logic
+}
+
+## ToDo: implement >> test for IS_TEAMCITY_RUN==true casses
+## (NICE TO HAVE) ToDo: implement >> test for python intsall casses with regard to distribution

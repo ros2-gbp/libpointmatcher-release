@@ -1,18 +1,18 @@
 #!/bin/bash -i
 # =================================================================================================
 #
-# Install libpointmatcher
+# Install project via cmake
 #
 # Usage:
-#   $ bash lpm_install_libpointmatcher_ubuntu.bash [<optional flag>]
+#   $ bash nbs_cmake_install_ubuntu.bash [<optional flag>]
 #
 # Arguments:
-#   --install-path </dir/abs/path/>     The directory where to install libpointmatcher (absolute path)
+#   --install-path </dir/abs/path/>     The directory where to install project (absolute path)
 #                                           (default location defined in the .env)
-#   --repository-version 1.4.0         Install libpointmatcher release tag version (default to master branch latest)
-#   --compile-test                      Compile the libpointmatcher unit-test
-#   --generate-doc                      Generate the libpointmatcher doxygen documentation
-#                                           in /usr/local/share/doc/libpointmatcher/api/html/index.html
+#   --repository-version 1.0.7         Install project release tag version (default to master branch latest)
+#   --compile-test                      Compile the project unit-test
+#   --generate-doc                      Generate the project doxygen documentation
+#                                           in /usr/local/share/doc/<project>/api/html/index.html
 #   --cmake-build-type RelWithDebInfo   The type of cmake build: None Debug Release RelWithDebInfo MinSizeRel
 #                                           (default to RelWithDebInfo)
 #   --build-system-CI-install           Set special configuration for CI/CD build system:
@@ -26,13 +26,13 @@
 #
 #     Usage:
 #      $ export APPEND_TO_CMAKE_FLAG=( -D CMAKE_INSTALL_PREFIX=/opt ) \
-#           && source lpm_install_libpointmatcher_ubuntu.bash
+#           && source nbs_cmake_install_ubuntu.bash
 #
 # Note:
-#   - this script required package: g++, make, cmake, build-essential, git and all libpointmatcher dependencies
-#   - execute `lpm_install_dependencies_general_ubuntu.bash` first
+#   - this script required package: g++, make, cmake, build-essential, git and all project dependencies
 #
 # =================================================================================================
+
 set -e # Note: we want the installer to always fail-fast (it wont affect the build system policy)
 
 declare -a CMAKE_FLAGS
@@ -41,8 +41,8 @@ CALLER_NAME="$(basename "$0" )"
 
 # ....Default......................................................................................
 REPOSITORY_VERSION='latest'
-BUILD_TESTS_FLAG=FALSE
-GENERATE_API_DOC_FLAG=FALSE
+BUILD_TESTS_FLAG=OFF
+PROJECT_BUILD_DOXYGEN_FLAG=OFF
 BUILD_SYSTEM_CI_INSTALL=FALSE
 CMAKE_BUILD_TYPE=RelWithDebInfo
 
@@ -52,8 +52,8 @@ export DEBIAN_FRONTEND=noninteractive
 # ....Project root logic...........................................................................
 TMP_CWD=$(pwd)
 
-LPM_PATH=$(git rev-parse --show-toplevel)
-cd "${LPM_PATH}/build_system" || exit
+PROJECT_PATH=$(git rev-parse --show-toplevel)
+cd "${PROJECT_PATH}/${NBS_SUPERPROJECT_BUILD_SYSTEM_DIR}" || exit
 
 # ....Load environment variables from file.........................................................
 set -o allexport
@@ -62,7 +62,7 @@ set +o allexport
 
 # ....Helper function..............................................................................
 # import shell functions from utilities library
-N2ST_PATH=${N2ST_PATH:-"${LPM_PATH}/build_system/utilities/norlab-shell-script-tools"}
+N2ST_PATH=${N2ST_PATH:-"${PROJECT_PATH}/${NBS_SUPERPROJECT_BUILD_SYSTEM_DIR}/utilities/norlab-build-system/utilities/norlab-shell-script-tools"}
 source "${N2ST_PATH}/import_norlab_shell_script_tools_lib.bash"
 
 # Set environment variable IMAGE_ARCH_AND_OS
@@ -74,10 +74,10 @@ function print_help_in_terminal() {
   \033[1m<optional argument>:\033[0m
     --install-path </dir/abs/path/>       The directory where to install (absolute path)
                                             (default location ${MSG_DIMMED_FORMAT}${NBS_LIB_INSTALL_PATH:?err}${MSG_END_FORMAT})
-    --repository-version 1.4.0           Install release tag version (default to master branch latest)
+    --repository-version 1.0.7            Install release tag version (default to master branch latest)
     --compile-test                        Compile the unit-test
                                             in ${MSG_DIMMED_FORMAT}${NBS_LIB_INSTALL_PATH}/${NBS_REPOSITORY_NAME:?err}/build${MSG_END_FORMAT}
-    --generate-doc                        Generate the libpointmatcher doxygen documentation
+    --generate-doc                        Generate the project doxygen documentation
                                             in ${MSG_DIMMED_FORMAT}/usr/local/share/doc/${NBS_REPOSITORY_NAME}/api/html/index.html${MSG_END_FORMAT}
     --cmake-build-type RelWithDebInfo     The type of cmake build: None Debug Release RelWithDebInfo MinSizeRel
     --build-system-CI-install             Set special configuration for CI/CD build system:
@@ -90,7 +90,7 @@ function print_help_in_terminal() {
     - Read the array APPEND_TO_CMAKE_FLAG
 
       Usage:
-       $ export APPEND_TO_CMAKE_FLAG=( -D CMAKE_INSTALL_PREFIX=/opt ) && source lpm_install_libpointmatcher_ubuntu.bash
+       $ export APPEND_TO_CMAKE_FLAG=( -D CMAKE_INSTALL_PREFIX=/opt ) && source nbs_cmake_install_ubuntu.bash
 
   "
 }
@@ -126,11 +126,11 @@ while [ $# -gt 0 ]; do
     shift # Remove argument value
     ;;
   --compile-test)
-    BUILD_TESTS_FLAG=TRUE
+    BUILD_TESTS_FLAG=ON
     shift
     ;;
   --generate-doc)
-    GENERATE_API_DOC_FLAG=TRUE
+    PROJECT_BUILD_DOXYGEN_FLAG=ON
     shift
     ;;
   --build-system-CI-install)
@@ -162,20 +162,20 @@ done
 
 
 # ....Cmake flags..................................................................................
-CMAKE_FLAGS=( -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -D BUILD_TESTS="${BUILD_TESTS_FLAG}" -D GENERATE_API_DOC="${GENERATE_API_DOC_FLAG}" "${APPEND_TO_CMAKE_FLAG[@]}" )
+CMAKE_FLAGS=( -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -D PROJECT_BUILD_TESTS="${BUILD_TESTS_FLAG}" -D PROJECT_BUILD_DOXYGEN="${PROJECT_BUILD_DOXYGEN_FLAG}" "${APPEND_TO_CMAKE_FLAG[@]}" )
 
-# (CRITICAL) ToDo: validate >> GENERATE_API_DOC install dir
+# (CRITICAL) ToDo: validate >> PROJECT_BUILD_DOXYGEN install dir
 
 # Note:
 #   - Previously use intall flag quick-hack to work around the install issue.
 #   - Keep it here as futur reference
-#  -D LIBNABO_INSTALL_DIR="${NBS_LIB_INSTALL_PATH}/libnabo" \
+#  -D PROJECT_INSTALL_DIR="${NBS_LIB_INSTALL_PATH}/<project>" \
 
 # ----Install steps--------------------------------------------------------------------------------
 teamcity_service_msg_blockOpened "Install ${NBS_REPOSITORY_NAME}"
 
 mkdir -p "${NBS_LIB_INSTALL_PATH}"
-print_msg "Directories (pre libpointmatcher install)$(tree -L 2 "${NBS_LIB_INSTALL_PATH}")"
+print_msg "Directories (pre project install)$(tree -L 2 "${NBS_LIB_INSTALL_PATH}")"
 cd "${NBS_LIB_INSTALL_PATH}"
 
 # ....Repository cloning step......................................................................
@@ -193,8 +193,8 @@ if [[ ${BUILD_SYSTEM_CI_INSTALL} == FALSE ]]; then
     git fetch --tags
     git tag --list
 
-    # Remove prefix 'v' from version tag
-#    GITHUB_TAG="${REPOSITORY_VERSION/v/}"
+    ## Remove prefix 'v' from version tag
+    #GITHUB_TAG="${REPOSITORY_VERSION/v/}"
     GITHUB_TAG="${REPOSITORY_VERSION}"
 
     git checkout tags/"${GITHUB_TAG}"
@@ -227,7 +227,7 @@ else
 
   INSTALL_EXIT_CODE=$?
 
-  if [[ ${GENERATE_API_DOC_FLAG} = TRUE ]]; then
+  if [[ ${PROJECT_BUILD_DOXYGEN_FLAG} = ON ]]; then
       make doc
   fi
 
