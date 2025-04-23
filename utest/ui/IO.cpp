@@ -32,7 +32,7 @@ TEST(IOTest, loadYaml)
 
 TEST(IOTest, loadCSV)
 {
-  typedef PointMatcherIO<NumericType> IO;
+  typedef PointMatcherIO<float> IO;
 	std::istringstream is;
   std::ostringstream os;
   DP pts;
@@ -183,7 +183,7 @@ TEST(IOTest, loadCSV)
 
 TEST(IOTest, loadPLY)
 {
-	typedef PointMatcherIO<NumericType> IO;
+	typedef PointMatcherIO<float> IO;
 	std::istringstream is;
 	
 	is.str(
@@ -257,7 +257,7 @@ TEST(IOTest, loadPLY)
 
 TEST(IOTest, loadPCD)
 {
-	typedef PointMatcherIO<NumericType> IO;
+	typedef PointMatcherIO<float> IO;
 	std::istringstream is;
 
 	// Empty file
@@ -371,7 +371,7 @@ public:
 		ptCloud.addDescriptor(descriptorName, PM::Matrix::Random(rows, nbPts));
 	}
 
-	virtual void loadSaveTest(const string& testFileName, bool plyFormat = false, const int nbPts = 10, bool binary = false, unsigned precision=12)
+	virtual void loadSaveTest(const string& testFileName, bool plyFormat = false, const int nbPts = 10, bool binary = false)
 	{
 		this->testFileName = testFileName;
 
@@ -394,7 +394,7 @@ public:
 			}
 		}
 
-		ptCloud.save(testFileName, binary, precision);
+		ptCloud.save(testFileName, binary);
 
 		ptCloudFromFile = DP::load(testFileName);
 

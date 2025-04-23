@@ -121,7 +121,6 @@ struct InspectorsImpl
 		const bool bDumpReading;
 		const bool bDumpReference;
 		const bool bWriteBinary;
-        const unsigned precision;
 
 	public:
 		AbstractVTKInspector(const std::string& className, const ParametersDoc paramsDoc, const Parameters& params);
@@ -172,8 +171,7 @@ struct InspectorsImpl
 				{"dumpDataLinks", "dump data links at each iteration", "0" },
 				{"dumpReading", "dump the reading cloud at each iteration", "0"},
 				{"dumpReference", "dump the reference cloud at each iteration", "0"},
-				{"writeBinary", "write binary VTK files", "0"},
-                {"precision", "default output precision", "7"}
+				{"writeBinary", "write binary VTK files", "0"}
 			};
 		}
 		
@@ -182,7 +180,6 @@ struct InspectorsImpl
 		const bool bDumpDataLinks;
 		const bool bDumpReading;
 		const bool bDumpReference;
-        const unsigned precision;
 		
 	protected:
 		virtual std::ostream* openStream(const std::string& role);

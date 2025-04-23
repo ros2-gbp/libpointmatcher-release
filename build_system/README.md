@@ -1,2 +1,1 @@
-See [contributing_instructions.md](/doc/contributing/contributing_instructions.md)
-for instructions related to bug reporting, code contribution and for setting up the `libpointmatcher-build-system` on your workstation to speed up your local development workflow.
+See [README.md #Contributing](https://github.com/norlab-ulaval/libpointmatcher/tree/master#contributing) for instructions on how integrate the `libpointmatcher-build-system` to your local development workflow (on your workstation). 
